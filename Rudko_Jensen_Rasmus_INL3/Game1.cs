@@ -2,76 +2,97 @@
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 namespace Rudko_Jensen_Rasmus_INL3;
-public class Game1 : Game{
-    private GraphicsDeviceManager _graphics;
-    private SpriteBatch _spriteBatch;
-    private Texture2D barrel;
-    private Vector2 barrelPosition;
-    private Vector2 barrelCenter;
-    private float rotation;
-    private float charge;
-    Viewport viewport;
-    public Game1(){
-        _graphics = new GraphicsDeviceManager(this);
-        Content.RootDirectory = "Content";
-        IsMouseVisible = true;
+
+public class Game1 : Game {
+private readonly GraphicsDeviceManager _graphics; // set graphics
+private SpriteBatch _spriteBatch; // default to collect screen items
+private Texture2D barrelImg; // my barrel img
+private Texture2D pixels; // gatherd pixels to reuse
+private Viewport viewport; // visible ui dimentions
+private Cannon cannon; // moving logic
+private Bullet bullet; // bullet logic > charge / relese
+private Target target; // the target
+private bool heldSpace; // if you charged up
+private enum GameState{Ready, Flying} // states
+private GameState state = GameState.Ready; // current state
+
+public Game1() { // init
+    _graphics = new GraphicsDeviceManager(this);
+
+    _graphics.PreferredBackBufferWidth = 1024; // some ratio i found on stack
+    _graphics.PreferredBackBufferHeight = 768;
+
+    Content.RootDirectory = "Content"; // set content to content
+}
+
+protected override void LoadContent(){
+    _spriteBatch = new SpriteBatch(GraphicsDevice);
+    viewport = GraphicsDevice.Viewport;
+
+    barrelImg = Content.Load<Texture2D>("barrel"); // load barrel
+
+    pixels = new Texture2D(GraphicsDevice, 1, 1); // reusable
+    pixels.SetData(new[] { Color.White }); // add it to set with default color
+
+    cannon = new Cannon(barrelImg, viewport);
+    target = new Target(viewport);
+}
+
+protected override void Update(GameTime gameTime){
+    KeyboardState kb = Keyboard.GetState(); // take key inputs
+
+    if (kb.IsKeyDown(Keys.Escape)) // if quit
+        Exit();
+
+    float dt = (float)gameTime.ElapsedGameTime.TotalSeconds; // delta time
+
+    bool holdingSpace = kb.IsKeyDown(Keys.Space); // charge when no bullet
+    bool spaceReleased = heldSpace && !holdingSpace;
+
+    cannon.Update(dt, kb, state == GameState.Ready); // move and charge when ready
+
+    if (state == GameState.Ready && spaceReleased) { // shoot if ready
+        bullet = cannon.Fire();
+
+        if (bullet != null) { // reset for new shot
+            target.Reset();
+            state = GameState.Flying;
+        }
     }
 
-    protected override void Initialize(){
-        base.Initialize();
+    if (state == GameState.Flying && bullet != null) { // update while flying bullet
+        bool inBounds = bullet.Update(dt, viewport);
+        bool hitTarget = target.CheckHit(bullet);
+
+        if (hitTarget || !inBounds) { // hit target
+            bullet = null;
+            state = GameState.Ready;
+        }
     }
 
-    protected override void LoadContent()
-    {
-        _spriteBatch = new SpriteBatch(GraphicsDevice);
-        barrel = Content.Load<Texture2D>("barrel");
+    heldSpace = holdingSpace; // save if held space
 
-        viewport = _graphics.GraphicsDevice.Viewport;
+    base.Update(gameTime);
+}
 
-        barrelCenter.X = barrel.Width / 2;
-        barrelCenter.Y = barrel.Height / 2;
+protected override void Draw(GameTime gameTime){
+    GraphicsDevice.Clear(Color.CornflowerBlue);
 
-        barrelPosition.X = barrel.Width;
-        barrelPosition.Y = viewport.Height - barrel.Height;
-    }
-    protected override void Update(GameTime gameTime)
-    {
-        if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
-            Exit();
+    _spriteBatch.Begin(); // add things to be drawn
 
-        float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+    cannon.Draw(_spriteBatch, pixels);
+    target.Draw(_spriteBatch, pixels);
 
-        if (Keyboard.GetState().IsKeyDown(Keys.W) || Keyboard.GetState().IsKeyDown(Keys.Up))
-            if (barrelPosition.Y > 0)
-                barrelPosition.Y -= elapsed * 100;
+    if (bullet != null)
+        bullet.Draw(_spriteBatch, pixels);
 
-        if (Keyboard.GetState().IsKeyDown(Keys.S) || Keyboard.GetState().IsKeyDown(Keys.Down))
-            if (barrelPosition.Y < viewport.Height)
-                barrelPosition.Y += elapsed * 100;
+    _spriteBatch.End(); // collect
 
-        if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.Left))
-            rotation -= elapsed;
+    base.Draw(gameTime); // draw collected on screen
+}
 
-        if (Keyboard.GetState().IsKeyDown(Keys.D) || Keyboard.GetState().IsKeyDown(Keys.Right))
-            rotation += elapsed;
-
-        if (Keyboard.GetState().IsKeyDown(Keys.Space))
-            charge += elapsed;
-        else
-
-
-        base.Update(gameTime);
-    }
-
-    protected override void Draw(GameTime gameTime){
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-
-        _spriteBatch.Begin();
-
-        _spriteBatch.Draw(barrel, barrelPosition, null, Color.White, rotation, barrelCenter, 1.0f, SpriteEffects.None, 0f);
-
-        _spriteBatch.End();
-
-        base.Draw(gameTime);
-    }
+protected override void UnloadContent() { // reset pixels
+    pixels?.Dispose();
+    base.UnloadContent();
+}
 }
