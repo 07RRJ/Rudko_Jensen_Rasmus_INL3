@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "nfYfXa8nsDA=",
+  "dgSpecHash": "rIR3XcIbBtI=",
   "success": true,
   "projectFilePath": "C:\\Users\\rasmu\\Documents\\vscode\\c#\\Rudko_Jensen_Rasmus_INL3\\Rudko_Jensen_Rasmus_INL3\\Rudko_Jensen_Rasmus_INL3.csproj",
   "expectedPackageFiles": [
@@ -11,10 +11,10 @@
     "C:\\Users\\rasmu\\.nuget\\packages\\nvorbis\\0.10.4\\nvorbis.0.10.4.nupkg.sha512",
     "C:\\Users\\rasmu\\.nuget\\packages\\system.memory\\4.5.3\\system.memory.4.5.3.nupkg.sha512",
     "C:\\Users\\rasmu\\.nuget\\packages\\system.valuetuple\\4.5.0\\system.valuetuple.4.5.0.nupkg.sha512",
-    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.20\\microsoft.netcore.app.ref.9.0.20.nupkg.sha512",
-    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.20\\microsoft.windowsdesktop.app.ref.9.0.20.nupkg.sha512",
-    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.20\\microsoft.aspnetcore.app.ref.9.0.20.nupkg.sha512",
-    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\9.0.20\\microsoft.netcore.app.host.win-x64.9.0.20.nupkg.sha512"
+    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.netcore.app.ref\\9.0.21\\microsoft.netcore.app.ref.9.0.21.nupkg.sha512",
+    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.windowsdesktop.app.ref\\9.0.21\\microsoft.windowsdesktop.app.ref.9.0.21.nupkg.sha512",
+    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\9.0.21\\microsoft.aspnetcore.app.ref.9.0.21.nupkg.sha512",
+    "C:\\Users\\rasmu\\.nuget\\packages\\microsoft.netcore.app.host.win-x64\\9.0.21\\microsoft.netcore.app.host.win-x64.9.0.21.nupkg.sha512"
   ],
   "logs": []
 }

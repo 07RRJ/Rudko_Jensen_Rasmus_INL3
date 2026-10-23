@@ -1,16 +1,16 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
-
 namespace Rudko_Jensen_Rasmus_INL3;
-
 public class Game1 : Game{
     private GraphicsDeviceManager _graphics;
     private SpriteBatch _spriteBatch;
-    Texture2D barrel;
-    private int x = 0, y = 400, charge = 0, rotation = 0;
-    private Vector2 spritePosition;
-    private Vector2 spriteOrigin;
+    private Texture2D barrel;
+    private Vector2 barrelPosition;
+    private Vector2 barrelCenter;
+    private float rotation;
+    private float charge;
+    Viewport viewport;
     public Game1(){
         _graphics = new GraphicsDeviceManager(this);
         Content.RootDirectory = "Content";
@@ -21,31 +21,44 @@ public class Game1 : Game{
         base.Initialize();
     }
 
-    protected override void LoadContent(){
+    protected override void LoadContent()
+    {
         _spriteBatch = new SpriteBatch(GraphicsDevice);
-
         barrel = Content.Load<Texture2D>("barrel");
 
-        Viewport viewport = _graphics.GraphicsDevice.Viewport;
-    }
+        viewport = _graphics.GraphicsDevice.Viewport;
 
-    protected override void Update(GameTime gameTime){
+        barrelCenter.X = barrel.Width / 2;
+        barrelCenter.Y = barrel.Height / 2;
+
+        barrelPosition.X = barrel.Width;
+        barrelPosition.Y = viewport.Height - barrel.Height;
+    }
+    protected override void Update(GameTime gameTime)
+    {
         if (GamePad.GetState(PlayerIndex.One).Buttons.Back == ButtonState.Pressed || Keyboard.GetState().IsKeyDown(Keys.Escape))
             Exit();
 
+        float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
         if (Keyboard.GetState().IsKeyDown(Keys.W) || Keyboard.GetState().IsKeyDown(Keys.Up))
-            if (y > 0)
-                y--;
+            if (barrelPosition.Y > 0)
+                barrelPosition.Y -= elapsed * 100;
 
         if (Keyboard.GetState().IsKeyDown(Keys.S) || Keyboard.GetState().IsKeyDown(Keys.Down))
-            if (y < 400)
-                y++;
+            if (barrelPosition.Y < viewport.Height)
+                barrelPosition.Y += elapsed * 100;
 
         if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.Left))
-            rotation--;
+            rotation -= elapsed;
 
-        if (Keyboard.GetState().IsKeyDown(Keys.A) || Keyboard.GetState().IsKeyDown(Keys.D))
-            rotation++;
+        if (Keyboard.GetState().IsKeyDown(Keys.D) || Keyboard.GetState().IsKeyDown(Keys.Right))
+            rotation += elapsed;
+
+        if (Keyboard.GetState().IsKeyDown(Keys.Space))
+            charge += elapsed;
+        else
+
 
         base.Update(gameTime);
     }
@@ -55,7 +68,7 @@ public class Game1 : Game{
 
         _spriteBatch.Begin();
 
-        _spriteBatch.Draw(barrel, new Rectangle(x, y, 50, 100), Color.White, );
+        _spriteBatch.Draw(barrel, barrelPosition, null, Color.White, rotation, barrelCenter, 1.0f, SpriteEffects.None, 0f);
 
         _spriteBatch.End();
 
