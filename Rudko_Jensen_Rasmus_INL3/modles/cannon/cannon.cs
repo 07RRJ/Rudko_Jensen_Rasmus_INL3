@@ -5,86 +5,66 @@ using Microsoft.Xna.Framework.Input;
 
 namespace Rudko_Jensen_Rasmus_INL3;
 
-public class Cannon
-{
-    private const float MoveSpeed = 200f;
-    private const float RotateSpeed = 1.5f;
-    private const float Margin = 40f;
+public class Cannon{
+private const float MoveSpeed = 200f; // up/down speed
+private const float RotationSpeed = 1.5f; // amount the barrel rotates
+private const float Margin = 40f; // from ui of the applications edge
 
-    private readonly Barrel barrel;
-    private readonly Charge charge;
+private readonly Barrel barrel; // the ui part and aiming
+private readonly Charge charge; // logic for space
 
-    private readonly int screenHeight;
-    private readonly float cannonX;
+private readonly int screenHeight;
 
-    public Cannon(Texture2D barrelTexture, Viewport viewport)
-    {
-        screenHeight = viewport.Height;
+public Cannon(Texture2D barrelTexture, Viewport viewport){
+    screenHeight = viewport.Height;
 
-        // Keep the cannon near the left edge.
-        cannonX = Margin;
+    float cannonY = screenHeight - Margin; // set cannon Y (bottom)
+    barrel = new Barrel(barrelTexture, new Vector2(Margin, cannonY));
 
-        // Start near the bottom of the screen.
-        float cannonY = screenHeight - Margin;
+    charge = new Charge();
+}
 
-        barrel = new Barrel(
-            barrelTexture,
-            new Vector2(cannonX, cannonY));
+public void Update(float dt, KeyboardState kb, bool canCharge){
+    Vector2 position = barrel.position;
 
-        charge = new Charge();
-    }
+    if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up)) // up
+        position.Y -= MoveSpeed * dt;
 
-    public void Update(float dt, KeyboardState kb, bool canCharge)
-    {
-        Vector2 position = barrel.Position;
+    if (kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.Down)) // down
+        position.Y += MoveSpeed * dt;
 
-        // Move only along the Y-axis.
-        if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up))
-            position.Y -= MoveSpeed * dt;
+    position.Y = MathHelper.Clamp(position.Y, Margin, screenHeight - Margin);
 
-        if (kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.Down))
-            position.Y += MoveSpeed * dt;
+    // X never changes, so the cannon moves vertically only.
+    position.X = Margin;
+    barrel.position = position;
 
-        // Keep the cannon on screen.
-        position.Y = MathHelper.Clamp(
-            position.Y,
-            Margin,
-            screenHeight - Margin);
+    // Rotate the barrel independently of the cannon's position.
+    if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
+        barrel.Rotate(-RotationSpeed * dt);
 
-        // X never changes, so the cannon moves vertically only.
-        position.X = cannonX;
-        barrel.Position = position;
+    if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
+        barrel.Rotate(RotationSpeed * dt);
 
-        // Rotate the barrel independently of the cannon's position.
-        if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
-            barrel.Rotate(-RotateSpeed * dt);
+    // Charge only when the game allows another shot.
+    charge.Update(dt, canCharge && kb.IsKeyDown(Keys.Space));
+}
 
-        if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
-            barrel.Rotate(RotateSpeed * dt);
+public Bullet Fire(){
+    // Do not fire if the charge bar is empty.
+    if (charge.Value <= 0f)
+        return null;
 
-        // Charge only when the game allows another shot.
-        charge.Update(
-            dt,
-            canCharge && kb.IsKeyDown(Keys.Space));
-    }
+    Vector2 position = barrel.GetMuzzlePosition();
+    Vector2 velocity = barrel.GetDirection() * charge.GetLaunchSpeed();
 
-    public Bullet Fire()
-    {
-        // Do not fire if the charge bar is empty.
-        if (charge.Value <= 0f)
-            return null;
+    charge.Reset();
 
-        Vector2 position = barrel.GetMuzzlePosition();
-        Vector2 velocity = barrel.GetDirection() * charge.GetLaunchSpeed();
+    return new Bullet(position, velocity);
+}
 
-        charge.Reset();
-
-        return new Bullet(position, velocity);
-    }
-
-    public void Draw(SpriteBatch spriteBatch, Texture2D pixel)
-    {
-        barrel.Draw(spriteBatch);
-        charge.Draw(spriteBatch, pixel);
-    }
+public void Draw(SpriteBatch spriteBatch, Texture2D pixel) {
+    barrel.Draw(spriteBatch);
+    charge.Draw(spriteBatch, pixel);
+}
 }
