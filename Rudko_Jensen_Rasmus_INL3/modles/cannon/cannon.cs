@@ -24,26 +24,26 @@ public Cannon(Texture2D barrelTexture, Viewport viewport){
     charge = new Charge();
 }
 
-public void Update(float dT, KeyboardState kb, bool canCharge){
+public void Update(float dT, KeyboardState kB, bool canCharge){
     Vector2 position = barrel.position;
 
-    if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up)) // up
+    if (kB.IsKeyDown(Keys.W) || kB.IsKeyDown(Keys.Up)) // up
         position.Y -= MoveSpeed * dT;
 
-    if (kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.Down)) // down
+    if (kB.IsKeyDown(Keys.S) || kB.IsKeyDown(Keys.Down)) // down
         position.Y += MoveSpeed * dT;
 
     position.Y = MathHelper.Clamp(position.Y, Margin, screenHeight - Margin); // min/max Y position
 
     barrel.position = position;
 
-    if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left)) // left
+    if (kB.IsKeyDown(Keys.A) || kB.IsKeyDown(Keys.Left)) // left
         barrel.Rotate(-RotationSpeed * dT);
 
-    if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right)) // right
+    if (kB.IsKeyDown(Keys.D) || kB.IsKeyDown(Keys.Right)) // right
         barrel.Rotate(RotationSpeed * dT);
 
-    charge.Update(dT, canCharge && kb.IsKeyDown(Keys.Space));
+    charge.Update(dT, canCharge && kB.IsKeyDown(Keys.Space));
 }
 
 public Bullet Fire(){
