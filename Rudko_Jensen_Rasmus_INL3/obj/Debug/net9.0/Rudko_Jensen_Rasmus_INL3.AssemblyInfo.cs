@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("Rudko_Jensen_Rasmus_INL3")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+f80ea915095b159c67565255308de0ac3f2cef9a")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+8c0d80ef2bb502ad723223d3a026d6c0af663968")]
 [assembly: System.Reflection.AssemblyProductAttribute("Rudko_Jensen_Rasmus_INL3")]
 [assembly: System.Reflection.AssemblyTitleAttribute("Rudko_Jensen_Rasmus_INL3")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

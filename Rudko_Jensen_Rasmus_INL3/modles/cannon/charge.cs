@@ -7,7 +7,7 @@ namespace Rudko_Jensen_Rasmus_INL3;
 public class Charge{
 private const float ChargeSpeed = 0.5f;
 private const float MinSpeed = 200f;
-private const float MaxSpeed = 800f;
+private const float MaxSpeed = 1500f;
 
 private const int barX = 20;
 private const int barY = 20;
@@ -25,11 +25,12 @@ public Charge(){
 }
 
 public void Update(float dT, bool spaceHeld){
-    if (spaceHeld)
+    if (spaceHeld){
         chargeAmount = MathHelper.Min(chargeAmount + ChargeSpeed * dT, 1f); // increase charge within max until it reaches 1
 
         filledWidth = (int)(barWidth * chargeAmount); // charget to X amount of full
         chargeBarRect = new Rectangle(barX, barY, filledWidth, barHeight);
+    }
 }
 public float GetLaunchSpeed(){
     return MathHelper.Min(MinSpeed + MaxSpeed * chargeAmount, MaxSpeed); // return charge between min/max speed based on charge

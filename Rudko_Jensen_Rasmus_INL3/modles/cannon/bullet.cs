@@ -6,6 +6,7 @@ namespace Rudko_Jensen_Rasmus_INL3;
 
 public class Bullet{
 private const float Gravity = 500f;
+// private const float AirResistance = 1f;
 private const float Radius = 8f;
 private const int Diameter = 16;
 private Rectangle rect;
@@ -21,12 +22,14 @@ public Bullet(Vector2 position, Vector2 speed){
 
 public bool Update(float dT, Viewport viewport){ 
     speed.Y += Gravity * dT; // increase Y
+    if (speed.X > 10)
+        speed.X -= 50 * dT; 
     position += speed * dT; // increase position based on speed which has been effected by gravity
 
     rect.X = (int)(position.X - Radius);
     rect.Y = (int)(position.Y - Radius);
 
-    return position.Y >= 0 && position.Y <= viewport.Height && position.X >= 0 && position.X <= viewport.Width; // returnn if on screen or not 
+    return position.Y <= viewport.Height && position.X <= viewport.Width; // returnn if on screen or not (the bullet cant move back so no need for that, also shooting up and letting it fall down is okay)
 }
 
 public bool Intersects(Rectangle rectangle){
