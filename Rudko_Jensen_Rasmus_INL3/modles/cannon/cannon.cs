@@ -13,7 +13,7 @@ private const float Margin = 40f; // from ui of the applications edge
 private readonly Barrel barrel; // the ui part and aiming
 private readonly Charge charge; // logic for space
 
-private readonly int screenHeight;
+private int screenHeight;
 
 public Cannon(Texture2D barrelTexture, Viewport viewport){
     screenHeight = viewport.Height;
@@ -24,43 +24,38 @@ public Cannon(Texture2D barrelTexture, Viewport viewport){
     charge = new Charge();
 }
 
-public void Update(float dt, KeyboardState kb, bool canCharge){
+public void Update(float dT, KeyboardState kb, bool canCharge){
     Vector2 position = barrel.position;
 
     if (kb.IsKeyDown(Keys.W) || kb.IsKeyDown(Keys.Up)) // up
-        position.Y -= MoveSpeed * dt;
+        position.Y -= MoveSpeed * dT;
 
     if (kb.IsKeyDown(Keys.S) || kb.IsKeyDown(Keys.Down)) // down
-        position.Y += MoveSpeed * dt;
+        position.Y += MoveSpeed * dT;
 
-    position.Y = MathHelper.Clamp(position.Y, Margin, screenHeight - Margin);
+    position.Y = MathHelper.Clamp(position.Y, Margin, screenHeight - Margin); // min/max Y position
 
-    // X never changes, so the cannon moves vertically only.
-    position.X = Margin;
     barrel.position = position;
 
-    // Rotate the barrel independently of the cannon's position.
-    if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left))
-        barrel.Rotate(-RotationSpeed * dt);
+    if (kb.IsKeyDown(Keys.A) || kb.IsKeyDown(Keys.Left)) // left
+        barrel.Rotate(-RotationSpeed * dT);
 
-    if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right))
-        barrel.Rotate(RotationSpeed * dt);
+    if (kb.IsKeyDown(Keys.D) || kb.IsKeyDown(Keys.Right)) // right
+        barrel.Rotate(RotationSpeed * dT);
 
-    // Charge only when the game allows another shot.
-    charge.Update(dt, canCharge && kb.IsKeyDown(Keys.Space));
+    charge.Update(dT, canCharge && kb.IsKeyDown(Keys.Space));
 }
 
 public Bullet Fire(){
-    // Do not fire if the charge bar is empty.
-    if (charge.Value <= 0f)
-        return null;
+    if (charge.chargeAmount <= 0f)
+        return null; // dont fire if no charge
 
     Vector2 position = barrel.GetMuzzlePosition();
-    Vector2 velocity = barrel.GetDirection() * charge.GetLaunchSpeed();
+    Vector2 speed = barrel.GetDirection() * charge.GetLaunchSpeed();
 
-    charge.Reset();
+    charge.Reset(); // empty bar
 
-    return new Bullet(position, velocity);
+    return new Bullet(position, speed);
 }
 
 public void Draw(SpriteBatch spriteBatch, Texture2D pixel) {

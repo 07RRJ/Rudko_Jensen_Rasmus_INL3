@@ -7,44 +7,39 @@ namespace Rudko_Jensen_Rasmus_INL3;
 public class Bullet{
 private const float Gravity = 500f;
 private const float Radius = 8f;
-private Vector2 velocity;
-public Vector2 Position { get; private set; }
+private const int Diameter = 16;
+private Rectangle rect;
+private Vector2 speed;
+public Vector2 position;
 
-public Bullet(Vector2 position, Vector2 velocity){
-    Position = position;
-    this.velocity = velocity;
+public Bullet(Vector2 position, Vector2 speed){
+    this.position = position;
+    this.speed = speed;
+
+    rect = new Rectangle((int)(position.X - Radius), (int)(position.Y - Radius), Diameter, Diameter);
 }
 
-// Move the bullet and return whether it is still on screen.
-public bool Update(float dt, Viewport viewport){
-    velocity.Y += Gravity * dt;
-    Position += velocity * dt;
+public bool Update(float dT, Viewport viewport){ 
+    speed.Y += Gravity * dT; // increase Y
+    position += speed * dT; // increase position based on speed which has been effected by gravity
 
-    return Position.X >= 0 && Position.X <= viewport.Width && Position.Y >= 0 && Position.Y <= viewport.Height;
+    rect.X = (int)(position.X - Radius);
+    rect.Y = (int)(position.Y - Radius);
+
+    return position.Y >= 0 && position.Y <= viewport.Height && position.X >= 0 && position.X <= viewport.Width; // returnn if on screen or not 
 }
 
-// Check whether the circular bullet overlaps a rectangle.
 public bool Intersects(Rectangle rectangle){
-    float closestX = MathHelper.Clamp(Position.X, rectangle.Left, rectangle.Right);
+    float closestX = MathHelper.Clamp(position.X, rectangle.Left, rectangle.Right); // take either bullet X inside of target or target < X >
+    float closestY = MathHelper.Clamp(position.Y, rectangle.Top, rectangle.Bottom); // same but for Y
 
-    float closestY = MathHelper.Clamp(Position.Y, rectangle.Top, rectangle.Bottom);
+    float dx = position.X - closestX; // actual x disstance, it is negative if it is not far enough
+    float dy = position.Y - closestY; // same for y
 
-    float dx = Position.X - closestX;
-    float dy = Position.Y - closestY;
-
-    return dx * dx + dy * dy < Radius * Radius;
+    return dx * dx + dy * dy < Radius * Radius; // use version of pythagoras to see if bullet overlaps
 }
 
 public void Draw(SpriteBatch spriteBatch, Texture2D pixel){
-    int diameter = (int)(Radius * 2);
-
-    spriteBatch.Draw(
-        pixel,
-        new Rectangle(
-            (int)(Position.X - Radius),
-            (int)(Position.Y - Radius),
-            diameter,
-            diameter),
-        Color.Black);
+    spriteBatch.Draw(pixel, rect, Color.Black);
 }
 }

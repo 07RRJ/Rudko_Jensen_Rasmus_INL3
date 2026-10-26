@@ -9,37 +9,40 @@ private const float ChargeSpeed = 0.5f;
 private const float MinSpeed = 200f;
 private const float MaxSpeed = 800f;
 
-public float Value { get; private set; }
+private const int barX = 20;
+private const int barY = 20;
+private const int barWidth = 200;
+private const int barHeight = 20;
 
-// Increase charge while Space is held, up to 100%.
-public void Update(float dt, bool spaceHeld){
-    if (spaceHeld)
-        Value = MathHelper.Min(Value + ChargeSpeed * dt, 1f);
+private readonly Rectangle grayBarRect; // background bar
+
+public float chargeAmount; // amount of charge %, 0-1f
+private int filledWidth; // start with 0 charge 
+private Rectangle chargeBarRect; // shows charge amount
+
+public Charge(){
+    grayBarRect = new Rectangle(barX, barY, barWidth, barHeight); // set the charge bar
 }
 
-// Convert the charge percentage into bullet speed.
+public void Update(float dT, bool spaceHeld){
+    if (spaceHeld)
+        chargeAmount = MathHelper.Min(chargeAmount + ChargeSpeed * dT, 1f); // increase charge within max until it reaches 1
+
+        filledWidth = (int)(barWidth * chargeAmount); // charget to X amount of full
+        chargeBarRect = new Rectangle(barX, barY, filledWidth, barHeight);
+}
 public float GetLaunchSpeed(){
-    return MathHelper.Lerp(MinSpeed, MaxSpeed, Value);
+    return MathHelper.Min(MinSpeed + MaxSpeed * chargeAmount, MaxSpeed); // return charge between min/max speed based on charge
 }
 
 public void Reset(){
-    Value = 0f;
+    chargeAmount = 0f; // reset charge
 }
 
 public void Draw(SpriteBatch spriteBatch, Texture2D pixel){
-    const int barWidth = 200;
-    const int barHeight = 20;
-    const int barX = 20;
-    const int barY = 20;
+    spriteBatch.Draw(pixel, grayBarRect, Color.Gray);
 
-    // Draw the empty bar.
-    spriteBatch.Draw(pixel, new Rectangle(barX, barY, barWidth, barHeight), Color.Gray);
-
-    // Fill the bar according to the current charge.
-    int filledWidth = (int)(barWidth * Value);
-
-    if (filledWidth > 0){
-        spriteBatch.Draw(pixel, new Rectangle(barX, barY, filledWidth, barHeight), Color.Yellow);
-    }
+    if (chargeAmount > 0) // if you have charge 
+        spriteBatch.Draw(pixel, chargeBarRect, Color.Yellow);
 }
 }

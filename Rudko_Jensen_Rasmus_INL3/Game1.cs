@@ -6,13 +6,17 @@ namespace Rudko_Jensen_Rasmus_INL3;
 public class Game1 : Game {
 private GraphicsDeviceManager _graphics;
 private SpriteBatch _spriteBatch;
+private Viewport viewport; // visible ui
+
 private Texture2D texture; // store my barrel img
 private Texture2D pixels; // gatherd pixels to reuse
-private Viewport viewport; // visible ui
+
 private Cannon cannon; // moving logic
 private Bullet bullet; // bullet logic > charge / relese
 private Target target; // the target
+
 private bool heldSpace; // if you charged up
+
 private enum GameState{Ready, Flying} // states of bullet
 private GameState state = GameState.Ready; // current state
 
@@ -37,7 +41,7 @@ protected override void LoadContent(){
 protected override void Update(GameTime gameTime){
     KeyboardState kB = Keyboard.GetState(); // take key inputs
 
-    if (kB.IsKeyDown(Keys.Escape)) // if quit
+    if (kB.IsKeyDown(Keys.Escape)) // if quit, quit
         Exit();
 
     float dT = (float)gameTime.ElapsedGameTime.TotalSeconds; // delta time
@@ -80,15 +84,10 @@ protected override void Draw(GameTime gameTime){
     target.Draw(_spriteBatch, pixels); // the target
 
     if (bullet != null)
-        bullet.Draw(_spriteBatch, pixels);
+        bullet.Draw(_spriteBatch, pixels); // if bullet add it too screen pixels 
 
     _spriteBatch.End(); // collect
 
     base.Draw(gameTime); // draw collected on screen
-}
-
-protected override void UnloadContent() { // reset pixels
-    pixels?.Dispose();
-    base.UnloadContent();
 }
 }
