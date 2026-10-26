@@ -22,7 +22,8 @@ private GameState state = GameState.Ready; // current state
 
 public Game1() { // init
     _graphics = new GraphicsDeviceManager(this);
-    Content.RootDirectory = "Content"; // set to gather content from "Content" folder
+    Content.RootDirectory = "Content";
+    IsMouseVisible = true;
 }
 
 protected override void LoadContent(){
